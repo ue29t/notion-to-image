@@ -6,6 +6,7 @@ const statusDiv = document.getElementById('status');
 const resultDiv = document.getElementById('result');
 const generatedImage = document.getElementById('generatedImage');
 const downloadLink = document.getElementById('downloadLink');
+const copyBtn = document.getElementById('copyBtn');
 
 // 保存済みAPIキーを読み込む
 chrome.storage.local.get(['apiKey'], (result) => {
@@ -125,6 +126,21 @@ generateBtn.addEventListener('click', async () => {
     showStatus(`エラー: ${err.message}`, true);
   } finally {
     generateBtn.disabled = false;
+  }
+});
+
+// 画像をクリップボードにコピーする
+copyBtn.addEventListener('click', async () => {
+  try {
+    const response = await fetch(generatedImage.src);
+    const blob = await response.blob();
+    await navigator.clipboard.write([
+      new ClipboardItem({ [blob.type]: blob })
+    ]);
+    copyBtn.textContent = 'コピー済み ✓';
+    setTimeout(() => { copyBtn.textContent = 'コピー'; }, 2000);
+  } catch (err) {
+    showStatus('コピーに失敗しました。', true);
   }
 });
 

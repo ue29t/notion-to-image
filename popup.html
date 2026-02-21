@@ -97,9 +97,14 @@
       color: #999;
       margin-top: 4px;
     }
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      justify-content: center;
+    }
     .download-btn {
       display: inline-block;
-      margin-top: 10px;
       padding: 6px 16px;
       background: #34a853;
       color: white;
@@ -109,6 +114,17 @@
       cursor: pointer;
       text-decoration: none;
     }
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 16px;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .copy-btn:hover { background: #3367d6; }
   </style>
 </head>
 <body>
@@ -131,8 +147,10 @@
 
   <div id="result" class="result" style="display:none">
     <img id="generatedImage" src="" alt="生成された画像" />
-    <br>
-    <a id="downloadLink" class="download-btn" download="generated-image.png">ダウンロード</a>
+    <div class="action-buttons">
+      <a id="downloadLink" class="download-btn" download="generated-image.png">ダウンロード</a>
+      <button id="copyBtn" class="copy-btn">コピー</button>
+    </div>
   </div>
 
   <script src="popup.js"></script>
