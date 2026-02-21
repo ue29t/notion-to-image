@@ -52,25 +52,41 @@ function getSelectedTextFromNotion() {
   }
 })();
 
+// グラレコ風プロンプトを生成
+function buildGrarecoPrompt(userText) {
+  return `以下の内容を、グラフィックレコーディング（グラレコ）スタイルで視覚化してください。
+スタイルの特徴：
+- 手書き風のイラストとテキストを組み合わせる
+- キーワードを吹き出しや囲みで強調する
+- アイコンや矢印、シンプルな人物イラストを使う
+- カラフルで見やすいレイアウト
+- 全体的にスケッチ風・ホワイトボード風の雰囲気
+
+内容：
+${userText}`;
+}
+
 // 画像生成（Gemini Nano Banana = gemini-2.5-flash-image）
 generateBtn.addEventListener('click', async () => {
   const apiKey = apiKeyInput.value.trim();
-  const prompt = promptTextarea.value.trim();
+  const userText = promptTextarea.value.trim();
 
   if (!apiKey) {
     showStatus('APIキーを入力してください。', true);
     return;
   }
-  if (!prompt) {
+  if (!userText) {
     showStatus('テキストを入力してください。', true);
     return;
   }
 
   generateBtn.disabled = true;
-  showStatus('画像を生成中... しばらくお待ちください');
+  showStatus('グラレコ風画像を生成中... しばらくお待ちください');
   resultDiv.style.display = 'none';
 
   try {
+    const prompt = buildGrarecoPrompt(userText);
+
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
       {
@@ -101,7 +117,6 @@ generateBtn.addEventListener('click', async () => {
       statusDiv.style.display = 'none';
       resultDiv.style.display = 'block';
     } else if (textPart) {
-      // テキストのみ返ってきた場合（画像生成を拒否された）
       throw new Error(`画像を生成できませんでした。モデルの返答: ${textPart.text.substring(0, 100)}`);
     } else {
       throw new Error(`画像データなし。レスポンス: ${JSON.stringify(data).substring(0, 200)}`);
