@@ -72,13 +72,13 @@ generateBtn.addEventListener('click', async () => {
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          instances: [{ prompt }],
-          parameters: { sampleCount: 1 }
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
         })
       }
     );
@@ -89,14 +89,16 @@ generateBtn.addEventListener('click', async () => {
     }
 
     const data = await response.json();
-    const base64Image = data.predictions?.[0]?.bytesBase64Encoded;
-    const mimeType = data.predictions?.[0]?.mimeType || 'image/png';
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    const imagePart = parts.find(p => p.inlineData);
 
-    if (!base64Image) {
+    if (!imagePart) {
       throw new Error('画像データが取得できませんでした');
     }
 
-    const imageUrl = `data:${mimeType};base64,${base64Image}`;
+    const mimeType = imagePart.inlineData.mimeType || 'image/png';
+    const imageUrl = `data:${mimeType};base64,${imagePart.inlineData.data}`;
+
     generatedImage.src = imageUrl;
     downloadLink.href = imageUrl;
 
