@@ -66,7 +66,7 @@ function buildGrarecoPrompt(userText) {
 ${userText}`;
 }
 
-// 画像生成（Gemini Nano Banana = gemini-2.5-flash-image）
+// 画像生成（Gemini Nano Banana Pro = gemini-3-pro-image-preview）
 generateBtn.addEventListener('click', async () => {
   const apiKey = apiKeyInput.value.trim();
   const userText = promptTextarea.value.trim();
@@ -81,14 +81,14 @@ generateBtn.addEventListener('click', async () => {
   }
 
   generateBtn.disabled = true;
-  showStatus('グラレコ風画像を生成中... しばらくお待ちください');
+  showStatus('Nano Banana Pro でグラレコ風画像を生成中...');
   resultDiv.style.display = 'none';
 
   try {
     const prompt = buildGrarecoPrompt(userText);
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -117,9 +117,9 @@ generateBtn.addEventListener('click', async () => {
       statusDiv.style.display = 'none';
       resultDiv.style.display = 'block';
     } else if (textPart) {
-      throw new Error(`画像を生成できませんでした。モデルの返答: ${textPart.text.substring(0, 100)}`);
+      throw new Error(`画像を生成できませんでした: ${textPart.text.substring(0, 100)}`);
     } else {
-      throw new Error(`画像データなし。レスポンス: ${JSON.stringify(data).substring(0, 200)}`);
+      throw new Error(`画像データなし: ${JSON.stringify(data).substring(0, 200)}`);
     }
   } catch (err) {
     showStatus(`エラー: ${err.message}`, true);
