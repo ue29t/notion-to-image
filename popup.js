@@ -78,7 +78,7 @@ generateBtn.addEventListener('click', async () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+          generationConfig: { responseModalities: ['IMAGE'] }
         })
       }
     );
@@ -91,19 +91,21 @@ generateBtn.addEventListener('click', async () => {
     const data = await response.json();
     const parts = data.candidates?.[0]?.content?.parts || [];
     const imagePart = parts.find(p => p.inlineData);
+    const textPart = parts.find(p => p.text);
 
-    if (!imagePart) {
-      throw new Error('画像データが取得できませんでした');
+    if (imagePart) {
+      const mimeType = imagePart.inlineData.mimeType || 'image/png';
+      const imageUrl = `data:${mimeType};base64,${imagePart.inlineData.data}`;
+      generatedImage.src = imageUrl;
+      downloadLink.href = imageUrl;
+      statusDiv.style.display = 'none';
+      resultDiv.style.display = 'block';
+    } else if (textPart) {
+      // テキストのみ返ってきた場合（画像生成を拒否された）
+      throw new Error(`画像を生成できませんでした。モデルの返答: ${textPart.text.substring(0, 100)}`);
+    } else {
+      throw new Error(`画像データなし。レスポンス: ${JSON.stringify(data).substring(0, 200)}`);
     }
-
-    const mimeType = imagePart.inlineData.mimeType || 'image/png';
-    const imageUrl = `data:${mimeType};base64,${imagePart.inlineData.data}`;
-
-    generatedImage.src = imageUrl;
-    downloadLink.href = imageUrl;
-
-    statusDiv.style.display = 'none';
-    resultDiv.style.display = 'block';
   } catch (err) {
     showStatus(`エラー: ${err.message}`, true);
   } finally {
