@@ -129,18 +129,27 @@ generateBtn.addEventListener('click', async () => {
   }
 });
 
-// 画像をクリップボードにコピーする
-copyBtn.addEventListener('click', async () => {
+// 画像をクリップボードにコピーする（canvas経由でPNG blobに変換）
+copyBtn.addEventListener('click', () => {
   try {
-    const response = await fetch(generatedImage.src);
-    const blob = await response.blob();
-    await navigator.clipboard.write([
-      new ClipboardItem({ [blob.type]: blob })
-    ]);
-    copyBtn.textContent = 'コピー済み ✓';
-    setTimeout(() => { copyBtn.textContent = 'コピー'; }, 2000);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = generatedImage.naturalWidth || generatedImage.width;
+    canvas.height = generatedImage.naturalHeight || generatedImage.height;
+    ctx.drawImage(generatedImage, 0, 0);
+    canvas.toBlob(async (blob) => {
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ]);
+        copyBtn.textContent = 'コピー済み ✓';
+        setTimeout(() => { copyBtn.textContent = 'コピー'; }, 2000);
+      } catch (err) {
+        showStatus(`コピーに失敗しました: ${err.message}`, true);
+      }
+    }, 'image/png');
   } catch (err) {
-    showStatus('コピーに失敗しました。', true);
+    showStatus(`コピーに失敗しました: ${err.message}`, true);
   }
 });
 
