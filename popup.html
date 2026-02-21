@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notion to Image</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 380px;
+      min-height: 200px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      color: #333;
+    }
+    .header {
+      background: #4285f4;
+      color: white;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .section {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e9ecef;
+      background: white;
+    }
+    label {
+      display: block;
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 4px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    input[type="password"], textarea {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 13px;
+      background: #fafafa;
+      resize: none;
+      font-family: inherit;
+    }
+    input[type="password"]:focus, textarea:focus {
+      outline: none;
+      border-color: #4285f4;
+      background: white;
+    }
+    textarea { height: 80px; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    .btn:hover { background: #3367d6; }
+    .btn:disabled { background: #aaa; cursor: not-allowed; }
+    .result {
+      padding: 16px;
+      text-align: center;
+    }
+    .result img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .status {
+      text-align: center;
+      padding: 12px;
+      font-size: 13px;
+      color: #666;
+    }
+    .error { color: #d93025; }
+    .save-btn {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 12px;
+      background: #34a853;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .hint {
+      font-size: 11px;
+      color: #999;
+      margin-top: 4px;
+    }
+    .download-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 16px;
+      background: #34a853;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">Notion → Image</div>
+
+  <div class="section">
+    <label>Gemini API キー</label>
+    <input type="password" id="apiKey" placeholder="AIzaSy..." />
+    <p class="hint">初回のみ入力が必要です。入力後は自動保存されます。</p>
+    <button class="save-btn" id="saveKey">保存</button>
+  </div>
+
+  <div class="section">
+    <label>選択中のテキスト（Notionで選択してから開いてください）</label>
+    <textarea id="prompt" placeholder="Notionでテキストを選択してからこの拡張機能を開いてください"></textarea>
+    <button class="btn" id="generateBtn">画像を生成する</button>
+  </div>
+
+  <div id="status" class="status" style="display:none"></div>
+
+  <div id="result" class="result" style="display:none">
+    <img id="generatedImage" src="" alt="生成された画像" />
+    <br>
+    <a id="downloadLink" class="download-btn" download="generated-image.png">ダウンロード</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
