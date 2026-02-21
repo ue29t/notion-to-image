@@ -34,7 +34,7 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    textarea {
+    input[type="password"], textarea {
       width: 100%;
       border: 1px solid #ddd;
       border-radius: 6px;
@@ -43,13 +43,13 @@
       background: #fafafa;
       resize: none;
       font-family: inherit;
-      height: 100px;
     }
-    textarea:focus {
+    input[type="password"]:focus, textarea:focus {
       outline: none;
       border-color: #4285f4;
       background: white;
     }
+    textarea { height: 100px; }
     .btn {
       display: block;
       width: 100%;
@@ -81,6 +81,22 @@
       color: #666;
     }
     .error { color: #d93025; }
+    .save-btn {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 12px;
+      background: #34a853;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .hint {
+      font-size: 11px;
+      color: #999;
+      margin-top: 4px;
+    }
     .download-btn {
       display: inline-block;
       margin-top: 10px;
@@ -96,7 +112,14 @@
   </style>
 </head>
 <body>
-  <div class="header">Notion → Image</div>
+  <div class="header">Notion → Image (Nano Banana)</div>
+
+  <div class="section">
+    <label>Gemini API キー</label>
+    <input type="password" id="apiKey" placeholder="AIzaSy..." />
+    <p class="hint">初回のみ入力が必要です。入力後は自動保存されます。</p>
+    <button class="save-btn" id="saveKey">保存</button>
+  </div>
 
   <div class="section">
     <label>選択中のテキスト（Notionで選択してから開いてください）</label>
@@ -109,7 +132,7 @@
   <div id="result" class="result" style="display:none">
     <img id="generatedImage" src="" alt="生成された画像" />
     <br>
-    <a id="downloadLink" class="download-btn" target="_blank">画像を開く</a>
+    <a id="downloadLink" class="download-btn" download="generated-image.png">ダウンロード</a>
   </div>
 
   <script src="popup.js"></script>
