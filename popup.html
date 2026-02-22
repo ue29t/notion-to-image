@@ -125,6 +125,61 @@
       cursor: pointer;
     }
     .copy-btn:hover { background: #3367d6; }
+    .history-section {
+      padding: 12px 16px;
+      background: white;
+    }
+    .history-title {
+      font-size: 11px;
+      color: #666;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .history-list {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .history-list::-webkit-scrollbar {
+      height: 4px;
+    }
+    .history-list::-webkit-scrollbar-thumb {
+      background: #ddd;
+      border-radius: 2px;
+    }
+    .history-item {
+      flex-shrink: 0;
+      width: 64px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      border-radius: 6px;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .history-item:hover {
+      border-color: #4285f4;
+    }
+    .history-item img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      display: block;
+    }
+    .history-item .history-time {
+      font-size: 9px;
+      color: #999;
+      text-align: center;
+      padding: 2px 0;
+      background: #f8f9fa;
+    }
+    .history-empty {
+      font-size: 12px;
+      color: #bbb;
+      padding: 8px 0;
+    }
   </style>
 </head>
 <body>
@@ -151,6 +206,11 @@
       <a id="downloadLink" class="download-btn" download="generated-image.png">ダウンロード</a>
       <button id="copyBtn" class="copy-btn">コピー</button>
     </div>
+  </div>
+
+  <div class="history-section" id="historySection" style="display:none">
+    <div class="history-title">履歴（最新5件）</div>
+    <div class="history-list" id="historyList"></div>
   </div>
 
   <script src="popup.js"></script>
