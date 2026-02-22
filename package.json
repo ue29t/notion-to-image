@@ -1,0 +1,10 @@
+{
+  "name": "notion-to-image",
+  "private": true,
+  "scripts": {
+    "lint": "eslint popup.js content.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
+}
