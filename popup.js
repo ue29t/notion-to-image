@@ -7,12 +7,17 @@ const resultDiv = document.getElementById('result');
 const generatedImage = document.getElementById('generatedImage');
 const downloadLink = document.getElementById('downloadLink');
 const copyBtn = document.getElementById('copyBtn');
+const historySection = document.getElementById('historySection');
+const historyList = document.getElementById('historyList');
 
-// 保存済みAPIキーを読み込む
-chrome.storage.local.get(['apiKey'], (result) => {
-  if (result.apiKey) {
-    apiKeyInput.value = result.apiKey;
+const HISTORY_MAX = 5;
+
+// 保存済みAPIキーと履歴を読み込む
+chrome.storage.local.get(['apiKey', 'history'], (stored) => {
+  if (stored.apiKey) {
+    apiKeyInput.value = stored.apiKey;
   }
+  renderHistory(stored.history || []);
 });
 
 // APIキーを保存する
@@ -72,6 +77,50 @@ function buildGrarecoPrompt(userText) {
 ${userText}`;
 }
 
+// 履歴に画像を保存する（最新5件を保持）
+function saveToHistory(imageUrl) {
+  chrome.storage.local.get(['history'], (stored) => {
+    const history = stored.history || [];
+    history.unshift({ imageUrl, timestamp: Date.now() });
+    if (history.length > HISTORY_MAX) {
+      history.length = HISTORY_MAX;
+    }
+    chrome.storage.local.set({ history }, () => {
+      renderHistory(history);
+    });
+  });
+}
+
+// 履歴サムネイルを描画する
+function renderHistory(history) {
+  historyList.innerHTML = '';
+
+  if (history.length === 0) {
+    historySection.style.display = 'none';
+    return;
+  }
+
+  historySection.style.display = 'block';
+  history.forEach((item) => {
+    const date = new Date(item.timestamp);
+    const timeLabel = `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `
+      <img src="${item.imageUrl}" alt="履歴画像" />
+      <div class="history-time">${timeLabel}</div>
+    `;
+    div.addEventListener('click', () => {
+      generatedImage.src = item.imageUrl;
+      downloadLink.href = item.imageUrl;
+      statusDiv.style.display = 'none';
+      resultDiv.style.display = 'block';
+    });
+    historyList.appendChild(div);
+  });
+}
+
 // 画像生成（Gemini Nano Banana Pro = gemini-3-pro-image-preview）
 generateBtn.addEventListener('click', async () => {
   const apiKey = apiKeyInput.value.trim();
@@ -122,6 +171,7 @@ generateBtn.addEventListener('click', async () => {
       downloadLink.href = imageUrl;
       statusDiv.style.display = 'none';
       resultDiv.style.display = 'block';
+      saveToHistory(imageUrl);
     } else if (textPart) {
       throw new Error(`画像を生成できませんでした: ${textPart.text.substring(0, 100)}`);
     } else {
